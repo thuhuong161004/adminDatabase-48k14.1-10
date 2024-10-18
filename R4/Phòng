@@ -56,6 +56,35 @@ BEGIN
     ORDER BY HD.HD_ngaybatdauThue DESC 
 END
 
+--update phòng, thêm phòng và kiểm tra giá phòng có đúng trong khoảng 1-2 triệu hay không 
+go
+create or alter trigger add_phong 
+on Phong
+after insert
+as
+begin
+	declare @P_id int , @P_sophong int,@P_giaphong int, @P_tinhtrangphong varchar(50)
+	select @P_id=P_id, @P_sophong=P_sophong, @P_giaphong=P_giaphong,@P_tinhtrangphong=P_tinhtrangphong
+	from inserted
+	if (@P_giaphong<1000000 or @P_giaphong>2000000)
+	begin
+		print N'Giá không phòng hợp lệ'
+		rollback transaction
+		return
+	end
+	else 
+		begin
+			if (@@ROWCOUNT >= 1)
+			begin
+				print N' Thêm phòng thành công'
+			end
+			else 
+				begin
+					print N' Có lỗi, chưa thêm được phòng'
+				end
+		end
+end
+
 
 
 
