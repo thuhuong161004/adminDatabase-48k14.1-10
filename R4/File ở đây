@@ -49,4 +49,40 @@ begin
 end
 go
 
+--	Khi thêm mới dữ liệu ,kiểm tra nếu họ tên và số điện thoại đã tồn tại trong bảng Người Thuê Phòng thì đưa ra thông báo ‘đã tồn tại khách hàng’ và hủy toàn bộ thao tác.
+go
+create or alter trigger add_nguoithuephong
+on 
+after insert
+as
+begin
+	declare @NTP_IDnguoithuephong int, @NTP_tenkhach varchar(100), @NTP_sodienthoai varchar(15)
+	select @NTP_IDnguoithuephong=NTP_IDnguoithuephong,@NTP_tenkhach=NTP_tenkhach,@NTP_sodienthoai=NTP_sodienthoai
+	from inserted
+	if exists (select 1 from NguoiThuePhong
+				where @NTP_tenkhach=NTP_tenkhach and @NTP_sodienthoai=NTP_sodienthoai)
+		begin
+			print N'Đã tồn tại khách hàng'
+			rollback transaction
+			return
+		end
+	else 
+		if (@@ROWCOUNT >= 1)
+		begin
+			print N' Thêm khách thành công'
+		end
+		else 
+		begin
+			if (@@ROWCOUNT >= 1)
+			begin
+				print N' Thêm khách không thành công'
+			end
+			else 
+				begin
+					print N' Có lỗi, chưa thêm được phòng'
+				end
+		end
+
+
+end
 
