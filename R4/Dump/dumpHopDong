@@ -1,0 +1,18 @@
+go
+create or alter proc dumpHopDong
+as
+begin
+	DECLARE @i INT = 1;
+	WHILE @i <= 1000
+	BEGIN
+		INSERT INTO HopDong (HD_mahopdong, P_id, HD_tienphong, HD_ngaybatdauthue, HD_thoihanthue, HD_anhhopdong)
+		VALUES (@i, 
+				ABS(CHECKSUM(NEWID()) % 100) + 1, 
+				ABS(CHECKSUM(NEWID()) % 500000) + 100000, 
+				DATEADD(DAY, ABS(CHECKSUM(NEWID()) % 30), GETDATE()), 
+				CONCAT(ABS(CHECKSUM(NEWID()) % 12) + 1, ' tháng'),  
+				NULL);  
+
+		SET @i = @i + 1;
+	END;
+end
