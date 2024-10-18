@@ -1,0 +1,14 @@
+go
+create or alter proc dumpPhong
+as
+begin
+	declare @P_id INT=1,@P_sophong INT,@P_giaphong INT,@P_tinhtrangphong NVARCHAR(50) = 'ok'
+	while @P_id <= 1000
+		begin
+			set @P_sophong = @P_id
+			set @P_giaphong = CAST((RAND() * (1500000 - 1000000 + 1) + 1000000) AS INT)
+			insert into Phong( P_id, P_sophong, P_giaphong , P_tinhtrangphong) values (@P_id ,@P_sophong ,@P_giaphong ,@P_tinhtrangphong)
+			set @P_id = @P_id +1;
+
+		end
+end
