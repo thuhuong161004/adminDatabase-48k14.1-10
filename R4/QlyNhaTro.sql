@@ -190,6 +190,7 @@ end
 exec dumpMinhChung
 select * from MinhChung
 ---1.Cập nhật trạng thái hóa đơn sau khi đã xác minh minh chứng
+alter table BangHoaDon add TrangThai nvarchar(50)
 create or alter trigger tTrangThaiHD
 on MinhChung
 after insert
@@ -223,13 +224,18 @@ exec ThemAnhMC
 
 
 --3,Thêm minh chứng mới
-create or alter proc ThemMC
-	@mc_id int,
-    @bhd_idbanghoadon int,
-    @mc_anhminhchung varbinary(max)
+create or alter trigger ThemMC
+on MinhChung
+instead of insert
 as
 begin
-    insert into MinhChung(MC_id,BHD_idBanghoadon, MC_anhminhchung)
-    values (@mc_id,@bhd_idbanghoadon, @mc_anhminhchung);
-end;
-
+	if exists (select 1 from MinhChung
+				join inserted on MinhChung.MC_id=inserted.MC_id 
+				and MinhChung.BHD_idBanghoadon=inserted.BHD_idBanghoadon)
+	begin
+		print N'Đã tồn tại mã minh chứng và mã hóa đơn'
+		rollback
+	end
+	insert into MinhChung(MC_id,BHD_idBanghoadon,MC_anhminhchung)
+	select MC_id,BHD_idBanghoadon,MC_anhminhchung from inserted
+end
