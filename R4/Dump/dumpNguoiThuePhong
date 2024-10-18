@@ -1,0 +1,27 @@
+create or alter proc dumpnguoithuephong
+as
+begin
+    declare 
+        @ntp_idnguoithuephong int = 1,
+        @p_id int,
+        @ntp_tenkhach varchar(100),
+        @ntp_anhcancuoc varbinary(max) = convert(varbinary(max), 'placeholder for can cuoc image'),
+        @ntp_sodienthoai varchar(15),
+        @ntp_tentaikhoan varchar(50),
+        @ntp_matkhau varchar(100);
+
+    while @ntp_idnguoithuephong <= 1000
+    begin
+        set @p_id = @ntp_idnguoithuephong;
+        set @ntp_tenkhach = 'khach ' + cast(@ntp_idnguoithuephong as varchar(10));
+        set @ntp_sodienthoai = '09' + right('000000000' + cast(abs(checksum(newid())) % 1000000000 as varchar(10)), 8);
+
+        set @ntp_tentaikhoan = 'user' + cast(@ntp_idnguoithuephong as varchar(10));
+        set @ntp_matkhau = 'password' + cast(@ntp_idnguoithuephong as varchar(10));
+			
+        insert into nguoithuephong(ntp_idnguoithuephong, p_id, ntp_tenkhach, ntp_anhcancuoc, ntp_sodienthoai, ntp_tentaikhoan, ntp_matkhau)
+        values (@ntp_idnguoithuephong, @p_id, @ntp_tenkhach, @ntp_anhcancuoc, @ntp_sodienthoai, @ntp_tentaikhoan, @ntp_matkhau);
+
+        set @ntp_idnguoithuephong = @ntp_idnguoithuephong + 1;
+    end
+end
